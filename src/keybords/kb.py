@@ -1,5 +1,4 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
-from config import settings
 
 def user_main_kb():
     return ReplyKeyboardMarkup(
@@ -7,12 +6,7 @@ def user_main_kb():
         resize_keyboard=True
     )
 
-def support_reply_kb(ticket_id: int):
+def support_reply_kb(ticket_id):
     return InlineKeyboardMarkup(
-        inline_keyboard=[[
-            InlineKeyboardButton(
-                text="Ответить", 
-                callback_data=f"reply_{ticket_id}"
-            )
-        ]]
+        inline_keyboard=[[InlineKeyboardButton(text="Ответить", callback_data=f"reply_{ticket_id}")]]
     )
