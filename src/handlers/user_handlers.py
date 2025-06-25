@@ -22,7 +22,7 @@ async def handle_user_message(message: types.Message):
     user_id = message.from_user.id
     user_name = message.from_user.username or message.from_user.first_name
     question = message.text
-    ticket_id = db.add_ticket(user_id, user_name, question)
+    ticket_id = await db.add_ticket(user_id, user_name, question)
     logger.info(f"Создан тикет #{ticket_id} от пользователя {user_name}")
     await message.bot.send_message(
         chat_id=settings.SUPPORT_CHAT_ID,

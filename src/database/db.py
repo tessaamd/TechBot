@@ -1,24 +1,38 @@
-import sqlite3
+import aiosqlite
 from .models import create_tables
 from config import settings
 
 class Database:
     def __init__(self):
-        self.conn = sqlite3.connect(settings.DB_NAME)
-        create_tables(self.conn)
-        self.cursor = self.conn.cursor()
+        self.conn = None
 
-    def add_ticket(self, user_id, user_name, question):
-        self.cursor.execute(
+    async def init_db(self):
+        self.conn = await aiosqlite.connect(settings.DB_NAME)
+        await create_tables(self.conn)
+
+    async def close(self):
+        if self.conn:
+            await self.conn.close()
+
+    async def add_ticket(self, user_id, user_name, question):
+        if not self.conn:
+            await self.init_db()
+        cursor = await self.conn.execute(
             "INSERT INTO tickets (user_id, user_name, question) VALUES (?, ?, ?)",
             (user_id, user_name, question)
         )
-        self.conn.commit()
-        return self.cursor.lastrowid
+        ticket_id = cursor.lastrowid
+        await self.conn.commit()
+        return ticket_id
 
-    def get_ticket(self, ticket_id):
-        self.cursor.execute("SELECT * FROM tickets WHERE id = ?", (ticket_id,))
-        row = self.cursor.fetchone()
+    async def get_ticket(self, ticket_id):
+        if not self.conn:
+            await self.init_db()
+        async with self.conn.execute(
+            "SELECT * FROM tickets WHERE id = ?",
+            (ticket_id,)
+        ) as cursor:
+            row = await cursor.fetchone()
         if row:
             return {
                 'id': row[0],
@@ -30,11 +44,13 @@ class Database:
             }
         return None
 
-    def close_ticket(self, ticket_id, answer):
-        self.cursor.execute(
+    async def close_ticket(self, ticket_id, answer):
+        if not self.conn:
+            await self.init_db()
+        await self.conn.execute(
             "UPDATE tickets SET answer = ?, status = 'closed' WHERE id = ?",
             (answer, ticket_id)
         )
-        self.conn.commit()
+        await self.conn.commit()
 
 db = Database()

@@ -34,7 +34,7 @@ async def handle_support_answer(message: types.Message, state: FSMContext):
         if len(answer) > settings.MAX_LENGTH:
             await message.reply(f"✖ Ответ превышает {settings.MAX_LENGTH} символов!")
             return
-        ticket = db.get_ticket(ticket_id)
+        ticket = await db.get_ticket(ticket_id)
         if not ticket:
             await message.reply(f"✖ Тикет #{ticket_id} не найден")
             await state.clear()
@@ -43,7 +43,7 @@ async def handle_support_answer(message: types.Message, state: FSMContext):
             await message.reply(f"✖ Тикет #{ticket_id} уже закрыт")
             await state.clear()
             return
-        db.close_ticket(ticket_id, answer)
+        await db.close_ticket(ticket_id, answer)
         logger.info(f"Тикет #{ticket_id} закрыт с ответом: {answer[:50]}...")
         await message.bot.send_message(
             chat_id=ticket['user_id'],

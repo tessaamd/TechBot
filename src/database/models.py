@@ -1,7 +1,7 @@
-from sqlite3 import Connection
+from aiosqlite import Connection
 
-def create_tables(conn: Connection):
-    conn.execute('''CREATE TABLE IF NOT EXISTS tickets (
+async def create_tables(conn: Connection):
+    await conn.execute('''CREATE TABLE IF NOT EXISTS tickets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
         user_name TEXT NOT NULL,
@@ -9,4 +9,3 @@ def create_tables(conn: Connection):
         answer TEXT,
         status TEXT DEFAULT 'open'
     )''')
-    conn.commit()
