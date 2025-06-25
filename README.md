@@ -1,4 +1,4 @@
-# Test Task - Support Bot Project
+# Support Bot Project
 
 ## Описание
 
