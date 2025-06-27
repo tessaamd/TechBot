@@ -13,7 +13,7 @@ logging.basicConfig(
 
 db = Database()
 
-async def main():
+async def main() -> None:
     await db.init_db()
     bot = Bot(token=settings.BOT_TOKEN)
     dp = Dispatcher(storage=MemoryStorage())
